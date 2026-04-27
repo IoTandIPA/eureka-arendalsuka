@@ -1,0 +1,722 @@
+<!--
+    =========================================================================
+    TILGJENGELIGHET – ARENDALSUKA 2026
+    For Divi Code-modul: lim inn hele denne filen som den er.
+
+    SLIK OPPDATERER DU STATUS:
+    1. Åpne Code-modulen i Divi
+    2. Søk (Ctrl+F) etter f.eks. "MANDAG 10.08"
+    3. Finn rommet og klokkeslettet
+    4. To endringer per bolke:
+       a) Bytt klassen:  tg-is-ledig  →  tg-is-booket  (eller tg-is-reservert)
+       b) Bytt teksten:  ● Ledig       →  ● Booket      (eller ● Reservert)
+    5. Lagre
+    =========================================================================
+-->
+
+<style>
+.tg-root {
+  --tg-green: #7DBA3C; --tg-green-dark: #6BA630; --tg-navy: #384553;
+  --tg-bg: #F6F7F9; --tg-card: #FFFFFF; --tg-border: #E5E8EC;
+  --tg-text: #2C3540; --tg-text-muted: #6B7684;
+  --tg-ledig-bg: #EAF5DA; --tg-ledig-border: #B8DB7E; --tg-ledig-text: #3F7A1A;
+  --tg-booket-bg: #F4F5F7; --tg-booket-border: #DEE1E6; --tg-booket-text: #8B95A3;
+  --tg-reservert-bg: #FFF4DB; --tg-reservert-border: #F5CE7A; --tg-reservert-text: #A36F00;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--tg-text); background: var(--tg-bg);
+  padding: 60px 20px; line-height: 1.5; border-radius: 12px;
+}
+.tg-root *, .tg-root *::before, .tg-root *::after { box-sizing: border-box; }
+.tg-day-radio {
+  position: absolute; opacity: 0; pointer-events: none;
+  width: 1px; height: 1px; margin: 0; padding: 0; border: 0;
+  clip: rect(0 0 0 0); overflow: hidden;
+}
+.tg-container { max-width: 1200px; margin: 0 auto; }
+.tg-header { text-align: center; margin-bottom: 32px; }
+.tg-eyebrow { display: inline-block; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tg-green-dark); font-weight: 700; margin-bottom: 10px; }
+.tg-title { font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 800; color: var(--tg-navy); margin: 0 0 8px; letter-spacing: -0.02em; line-height: 1.2; }
+.tg-title em { font-style: normal; color: var(--tg-green); }
+.tg-subtitle { color: var(--tg-text-muted); margin: 0; font-size: 1rem; }
+.tg-legend { display: flex; justify-content: center; gap: 24px; margin: 28px 0 24px; flex-wrap: wrap; }
+.tg-legend-item { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; color: var(--tg-text); font-weight: 500; }
+.tg-legend-dot { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid; }
+.tg-legend-dot.tg-is-ledig     { background: #EAF5DA; border-color: #B8DB7E; }
+.tg-legend-dot.tg-is-reservert { background: #FFF4DB; border-color: #F5CE7A; }
+.tg-legend-dot.tg-is-booket    { background: #F4F5F7; border-color: #DEE1E6; }
+
+.tg-day-tabs { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
+.tg-day-tab {
+  border: 2px solid #E5E8EC; background: #FFFFFF; color: #384553;
+  padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: inherit;
+  font-weight: 700; font-size: 0.875rem; transition: all 0.18s ease;
+  min-width: 110px; text-align: center; line-height: 1.3; user-select: none;
+  display: inline-block;
+}
+.tg-day-tab small { display: block; font-size: 0.7rem; color: #6B7684; font-weight: 500; margin-top: 2px; letter-spacing: 0.02em; }
+.tg-day-tab:hover { border-color: #7DBA3C; color: #6BA630; transform: translateY(-1px); }
+
+/* AKTIV TAB – bruker klasse-selectors i stedet for [for=] attributter */
+#tg-day-0908:checked ~ .tg-day-tabs .tg-tab-0908,
+#tg-day-1008:checked ~ .tg-day-tabs .tg-tab-1008,
+#tg-day-1108:checked ~ .tg-day-tabs .tg-tab-1108,
+#tg-day-1208:checked ~ .tg-day-tabs .tg-tab-1208,
+#tg-day-1308:checked ~ .tg-day-tabs .tg-tab-1308 {
+  background: #7DBA3C !important;
+  border-color: #7DBA3C !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(125, 186, 60, 0.35) !important;
+}
+#tg-day-0908:checked ~ .tg-day-tabs .tg-tab-0908 small,
+#tg-day-1008:checked ~ .tg-day-tabs .tg-tab-1008 small,
+#tg-day-1108:checked ~ .tg-day-tabs .tg-tab-1108 small,
+#tg-day-1208:checked ~ .tg-day-tabs .tg-tab-1208 small,
+#tg-day-1308:checked ~ .tg-day-tabs .tg-tab-1308 small {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* DAG-INNHOLD */
+.tg-day-content { display: none; }
+#tg-day-0908:checked ~ .tg-day-contents #tg-content-0908,
+#tg-day-1008:checked ~ .tg-day-contents #tg-content-1008,
+#tg-day-1108:checked ~ .tg-day-contents #tg-content-1108,
+#tg-day-1208:checked ~ .tg-day-contents #tg-content-1208,
+#tg-day-1308:checked ~ .tg-day-contents #tg-content-1308 {
+  display: block;
+}
+
+.tg-rooms { display: flex; flex-direction: column; gap: 16px; }
+.tg-room { background: var(--tg-card); border: 1px solid var(--tg-border); border-radius: 14px; padding: 22px 24px; box-shadow: 0 1px 2px rgba(56, 69, 83, 0.04); transition: box-shadow 0.2s; }
+.tg-room:hover { box-shadow: 0 4px 16px rgba(56, 69, 83, 0.06); }
+.tg-room-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--tg-border); }
+.tg-room-title { margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--tg-navy); letter-spacing: -0.01em; }
+.tg-room-sub { font-size: 0.8125rem; color: var(--tg-text-muted); font-weight: 500; }
+
+.tg-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.tg-slot { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 10px; border: 1.5px solid; font-size: 0.875rem; transition: all 0.18s ease; background: var(--tg-card); text-align: left; text-decoration: none; font-family: inherit; color: inherit; }
+.tg-slot-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; opacity: 0.85; }
+.tg-slot-time { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; }
+.tg-slot-price { font-size: 0.78rem; opacity: 0.75; font-weight: 500; }
+.tg-slot-status { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-top: 4px; }
+
+.tg-slot.tg-is-ledig { background: var(--tg-ledig-bg); border-color: var(--tg-ledig-border); color: var(--tg-ledig-text); cursor: pointer; }
+.tg-slot.tg-is-ledig:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(125, 186, 60, 0.22); border-color: var(--tg-green); }
+
+.tg-slot.tg-is-booket { background: var(--tg-booket-bg); border-color: var(--tg-booket-border); color: var(--tg-booket-text); cursor: not-allowed; pointer-events: none; }
+.tg-slot.tg-is-booket .tg-slot-time { text-decoration: line-through; text-decoration-thickness: 1.5px; opacity: 0.85; }
+
+.tg-slot.tg-is-reservert { background: var(--tg-reservert-bg); border-color: var(--tg-reservert-border); color: var(--tg-reservert-text); cursor: pointer; }
+.tg-slot.tg-is-reservert:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(245, 206, 122, 0.3); }
+
+.tg-cta { margin-top: 36px; background: var(--tg-navy); border-radius: 14px; padding: 36px 28px; text-align: center; color: #FFFFFF; position: relative; overflow: hidden; }
+.tg-cta::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--tg-green); }
+.tg-cta h3 { margin: 0 0 8px; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; color: #FFFFFF; }
+.tg-cta p { margin: 0 0 22px; opacity: 0.85; font-size: 0.95rem; color: #FFFFFF; }
+.tg-cta-buttons { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.tg-cta-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: all 0.18s; font-family: inherit; }
+.tg-cta-btn.tg-is-primary { background: var(--tg-green); color: #FFFFFF; }
+.tg-cta-btn.tg-is-primary:hover { background: var(--tg-green-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(125, 186, 60, 0.35); color: #FFFFFF; }
+.tg-cta-btn.tg-is-secondary { background: transparent; color: #FFFFFF; border: 1.5px solid rgba(255, 255, 255, 0.25); }
+.tg-cta-btn.tg-is-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.45); color: #FFFFFF; }
+
+@media (max-width: 640px) {
+  .tg-root { padding: 32px 14px; }
+  .tg-legend { gap: 14px; }
+  .tg-day-tab { min-width: 0; flex: 1; padding: 9px 10px; font-size: 0.8rem; }
+  .tg-slots { grid-template-columns: 1fr 1fr; }
+  .tg-room { padding: 18px 16px; }
+  .tg-slot { padding: 10px 12px; }
+  .tg-slot-time { font-size: 0.9rem; }
+}
+</style>
+
+<div class="tg-root">
+  <div class="tg-container">
+
+    <div class="tg-header">
+      <div class="tg-eyebrow">Lokaler i Eureka 4. etasje</div>
+      <h2 class="tg-title">Tilgjengelighet under <em>Arendalsuka 2026</em></h2>
+      <p class="tg-subtitle">10.–14. august · Velg dag for å se hvilke bolker som er ledige</p>
+    </div>
+
+    <div class="tg-legend">
+      <div class="tg-legend-item"><span class="tg-legend-dot tg-is-ledig"></span> Ledig</div>
+      <div class="tg-legend-item"><span class="tg-legend-dot tg-is-reservert"></span> Reservert</div>
+      <div class="tg-legend-item"><span class="tg-legend-dot tg-is-booket"></span> Booket</div>
+    </div>
+
+    <!-- Radioknapper plassert her (rett før tabs) for å hindre scroll-hopp -->
+    <input type="radio" name="tg-day" id="tg-day-0908" class="tg-day-radio">
+    <input type="radio" name="tg-day" id="tg-day-1008" class="tg-day-radio" checked>
+    <input type="radio" name="tg-day" id="tg-day-1108" class="tg-day-radio">
+    <input type="radio" name="tg-day" id="tg-day-1208" class="tg-day-radio">
+    <input type="radio" name="tg-day" id="tg-day-1308" class="tg-day-radio">
+
+    <div class="tg-day-tabs">
+      <label for="tg-day-0908" class="tg-day-tab tg-tab-0908">Søndag<small>09.08.2026</small></label>
+      <label for="tg-day-1008" class="tg-day-tab tg-tab-1008">Mandag<small>10.08.2026</small></label>
+      <label for="tg-day-1108" class="tg-day-tab tg-tab-1108">Tirsdag<small>11.08.2026</small></label>
+      <label for="tg-day-1208" class="tg-day-tab tg-tab-1208">Onsdag<small>12.08.2026</small></label>
+      <label for="tg-day-1308" class="tg-day-tab tg-tab-1308">Torsdag<small>13.08.2026</small></label>
+    </div>
+
+    <div class="tg-day-contents">
+
+      <!-- =============================================================
+           SØNDAG 09.08
+           For å endre status: bytt klassen "tg-is-ledig" til enten
+           "tg-is-booket" eller "tg-is-reservert".
+           Husk også å endre teksten "● Ledig" til "● Booket" / "● Reservert".
+           ============================================================= -->
+      <div class="tg-day-content" id="tg-content-0908">
+        <div class="tg-rooms">
+
+          <!-- Søndag – Takterrassen -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Takterrassen</h3>
+              <span class="tg-room-sub">Minglearrangement · 80–100 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2007:30%E2%80%9309:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Frokost</span><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">30 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2010:00%E2%80%9312:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2012:30%E2%80%9314:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2015:00%E2%80%9317:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2017:30%E2%80%9320:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Kveld</span><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">50 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Søndag – Newton -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Newton</h3>
+              <span class="tg-room-sub">Konferanserom · 50 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2007:30%E2%80%9309:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2010:00%E2%80%9312:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2012:30%E2%80%9314:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2015:00%E2%80%9317:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2017:30%E2%80%9320:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Søndag – Da Vinci -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Da Vinci</h3>
+              <span class="tg-room-sub">Møterom · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2007:30%E2%80%9309:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2010:00%E2%80%9312:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2012:30%E2%80%9314:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2015:00%E2%80%9317:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2017:30%E2%80%9320:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Søndag – Spinoza -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Spinoza</h3>
+              <span class="tg-room-sub">Møterom · 12 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2007:30%E2%80%9309:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2010:00%E2%80%9312:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2012:30%E2%80%9314:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2015:00%E2%80%9317:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2017:30%E2%80%9320:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Søndag – Podcast Studio -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Podcast Studio</h3>
+              <span class="tg-room-sub">Studio · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2007:30%E2%80%9309:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2010:00%E2%80%9312:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2012:30%E2%80%9314:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2015:00%E2%80%9317:00,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2017:30%E2%80%9320:30,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Søndag – Lounge -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Lounge</h3>
+              <span class="tg-room-sub">Åpent areal · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Lounge%20%E2%80%93%20Per%20time,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">2 500,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Søndag – Drop-in Møterom -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Drop-in Møterom</h3>
+              <span class="tg-room-sub">Drop-in · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Drop-in%20M%C3%B8terom%20%E2%80%93%20Per%20time,%20S%C3%B8ndag%2009.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">1 000,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =============================================================
+           MANDAG 10.08
+           For å endre status: bytt klassen "tg-is-ledig" til enten
+           "tg-is-booket" eller "tg-is-reservert".
+           Husk også å endre teksten "● Ledig" til "● Booket" / "● Reservert".
+           ============================================================= -->
+      <div class="tg-day-content" id="tg-content-1008">
+        <div class="tg-rooms">
+
+          <!-- Mandag – Takterrassen -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Takterrassen</h3>
+              <span class="tg-room-sub">Minglearrangement · 80–100 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2007:30%E2%80%9309:30,%20Mandag%2010.08.2026"><span class="tg-slot-label">Frokost</span><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">30 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2010:00%E2%80%9312:00,%20Mandag%2010.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2012:30%E2%80%9314:30,%20Mandag%2010.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2015:00%E2%80%9317:00,%20Mandag%2010.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2017:30%E2%80%9320:30,%20Mandag%2010.08.2026"><span class="tg-slot-label">Kveld</span><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">50 000,-</span><span class="tg-slot-status">● Booket</span></a>
+            </div>
+          </div>
+
+          <!-- Mandag – Newton -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Newton</h3>
+              <span class="tg-room-sub">Konferanserom · 50 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2007:30%E2%80%9309:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-reservert" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2010:00%E2%80%9312:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Reservert</span></a>
+              <a class="tg-slot tg-is-reservert" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2012:30%E2%80%9314:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Reservert</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2015:00%E2%80%9317:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2017:30%E2%80%9320:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+            </div>
+          </div>
+
+          <!-- Mandag – Da Vinci -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Da Vinci</h3>
+              <span class="tg-room-sub">Møterom · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2007:30%E2%80%9309:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2010:00%E2%80%9312:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2012:30%E2%80%9314:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2015:00%E2%80%9317:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2017:30%E2%80%9320:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Mandag – Spinoza -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Spinoza</h3>
+              <span class="tg-room-sub">Møterom · 12 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2007:30%E2%80%9309:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2010:00%E2%80%9312:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2012:30%E2%80%9314:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2015:00%E2%80%9317:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2017:30%E2%80%9320:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Mandag – Podcast Studio -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Podcast Studio</h3>
+              <span class="tg-room-sub">Studio · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2007:30%E2%80%9309:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2010:00%E2%80%9312:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2012:30%E2%80%9314:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2015:00%E2%80%9317:00,%20Mandag%2010.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2017:30%E2%80%9320:30,%20Mandag%2010.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Mandag – Lounge -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Lounge</h3>
+              <span class="tg-room-sub">Åpent areal · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Lounge%20%E2%80%93%20Per%20time,%20Mandag%2010.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">2 500,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Mandag – Drop-in Møterom -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Drop-in Møterom</h3>
+              <span class="tg-room-sub">Drop-in · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Drop-in%20M%C3%B8terom%20%E2%80%93%20Per%20time,%20Mandag%2010.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">1 000,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =============================================================
+           TIRSDAG 11.08
+           For å endre status: bytt klassen "tg-is-ledig" til enten
+           "tg-is-booket" eller "tg-is-reservert".
+           Husk også å endre teksten "● Ledig" til "● Booket" / "● Reservert".
+           ============================================================= -->
+      <div class="tg-day-content" id="tg-content-1108">
+        <div class="tg-rooms">
+
+          <!-- Tirsdag – Takterrassen -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Takterrassen</h3>
+              <span class="tg-room-sub">Minglearrangement · 80–100 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2007:30%E2%80%9309:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Frokost</span><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">30 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2010:00%E2%80%9312:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2012:30%E2%80%9314:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2015:00%E2%80%9317:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-reservert" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2017:30%E2%80%9320:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Kveld</span><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">50 000,-</span><span class="tg-slot-status">● Reservert</span></a>
+            </div>
+          </div>
+
+          <!-- Tirsdag – Newton -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Newton</h3>
+              <span class="tg-room-sub">Konferanserom · 50 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2007:30%E2%80%9309:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2010:00%E2%80%9312:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2012:30%E2%80%9314:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2015:00%E2%80%9317:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2017:30%E2%80%9320:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Tirsdag – Da Vinci -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Da Vinci</h3>
+              <span class="tg-room-sub">Møterom · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2007:30%E2%80%9309:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2010:00%E2%80%9312:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2012:30%E2%80%9314:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2015:00%E2%80%9317:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2017:30%E2%80%9320:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Tirsdag – Spinoza -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Spinoza</h3>
+              <span class="tg-room-sub">Møterom · 12 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2007:30%E2%80%9309:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2010:00%E2%80%9312:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2012:30%E2%80%9314:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2015:00%E2%80%9317:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2017:30%E2%80%9320:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Tirsdag – Podcast Studio -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Podcast Studio</h3>
+              <span class="tg-room-sub">Studio · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2007:30%E2%80%9309:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2010:00%E2%80%9312:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2012:30%E2%80%9314:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2015:00%E2%80%9317:00,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2017:30%E2%80%9320:30,%20Tirsdag%2011.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Tirsdag – Lounge -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Lounge</h3>
+              <span class="tg-room-sub">Åpent areal · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Lounge%20%E2%80%93%20Per%20time,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">2 500,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Tirsdag – Drop-in Møterom -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Drop-in Møterom</h3>
+              <span class="tg-room-sub">Drop-in · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Drop-in%20M%C3%B8terom%20%E2%80%93%20Per%20time,%20Tirsdag%2011.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">1 000,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =============================================================
+           ONSDAG 12.08
+           For å endre status: bytt klassen "tg-is-ledig" til enten
+           "tg-is-booket" eller "tg-is-reservert".
+           Husk også å endre teksten "● Ledig" til "● Booket" / "● Reservert".
+           ============================================================= -->
+      <div class="tg-day-content" id="tg-content-1208">
+        <div class="tg-rooms">
+
+          <!-- Onsdag – Takterrassen -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Takterrassen</h3>
+              <span class="tg-room-sub">Minglearrangement · 80–100 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2007:30%E2%80%9309:30,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Frokost</span><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">30 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2010:00%E2%80%9312:00,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2012:30%E2%80%9314:30,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2015:00%E2%80%9317:00,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2017:30%E2%80%9320:30,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Kveld</span><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">50 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Onsdag – Newton -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Newton</h3>
+              <span class="tg-room-sub">Konferanserom · 50 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2007:30%E2%80%9309:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2010:00%E2%80%9312:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-booket" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2012:30%E2%80%9314:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Booket</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2015:00%E2%80%9317:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2017:30%E2%80%9320:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Onsdag – Da Vinci -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Da Vinci</h3>
+              <span class="tg-room-sub">Møterom · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2007:30%E2%80%9309:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2010:00%E2%80%9312:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2012:30%E2%80%9314:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2015:00%E2%80%9317:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2017:30%E2%80%9320:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Onsdag – Spinoza -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Spinoza</h3>
+              <span class="tg-room-sub">Møterom · 12 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2007:30%E2%80%9309:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2010:00%E2%80%9312:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2012:30%E2%80%9314:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2015:00%E2%80%9317:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2017:30%E2%80%9320:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Onsdag – Podcast Studio -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Podcast Studio</h3>
+              <span class="tg-room-sub">Studio · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2007:30%E2%80%9309:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2010:00%E2%80%9312:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2012:30%E2%80%9314:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2015:00%E2%80%9317:00,%20Onsdag%2012.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2017:30%E2%80%9320:30,%20Onsdag%2012.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Onsdag – Lounge -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Lounge</h3>
+              <span class="tg-room-sub">Åpent areal · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Lounge%20%E2%80%93%20Per%20time,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">2 500,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Onsdag – Drop-in Møterom -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Drop-in Møterom</h3>
+              <span class="tg-room-sub">Drop-in · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Drop-in%20M%C3%B8terom%20%E2%80%93%20Per%20time,%20Onsdag%2012.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">1 000,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =============================================================
+           TORSDAG 13.08
+           For å endre status: bytt klassen "tg-is-ledig" til enten
+           "tg-is-booket" eller "tg-is-reservert".
+           Husk også å endre teksten "● Ledig" til "● Booket" / "● Reservert".
+           ============================================================= -->
+      <div class="tg-day-content" id="tg-content-1308">
+        <div class="tg-rooms">
+
+          <!-- Torsdag – Takterrassen -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Takterrassen</h3>
+              <span class="tg-room-sub">Minglearrangement · 80–100 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2007:30%E2%80%9309:30,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Frokost</span><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">30 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2010:00%E2%80%9312:00,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2012:30%E2%80%9314:30,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2015:00%E2%80%9317:00,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Lunsj</span><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">40 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Takterrassen%20%E2%80%93%2017:30%E2%80%9320:30,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Kveld</span><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">50 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Torsdag – Newton -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Newton</h3>
+              <span class="tg-room-sub">Konferanserom · 50 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2007:30%E2%80%9309:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2010:00%E2%80%9312:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2012:30%E2%80%9314:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2015:00%E2%80%9317:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Newton%20%E2%80%93%2017:30%E2%80%9320:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">10 500,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Torsdag – Da Vinci -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Da Vinci</h3>
+              <span class="tg-room-sub">Møterom · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2007:30%E2%80%9309:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2010:00%E2%80%9312:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2012:30%E2%80%9314:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2015:00%E2%80%9317:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Da%20Vinci%20%E2%80%93%2017:30%E2%80%9320:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">5 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Torsdag – Spinoza -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Spinoza</h3>
+              <span class="tg-room-sub">Møterom · 12 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2007:30%E2%80%9309:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2010:00%E2%80%9312:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2012:30%E2%80%9314:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2015:00%E2%80%9317:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Spinoza%20%E2%80%93%2017:30%E2%80%9320:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">2 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Torsdag – Podcast Studio -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Podcast Studio</h3>
+              <span class="tg-room-sub">Studio · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2007:30%E2%80%9309:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">07:30–09:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2010:00%E2%80%9312:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">10:00–12:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2012:30%E2%80%9314:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">12:30–14:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2015:00%E2%80%9317:00,%20Torsdag%2013.08.2026"><span class="tg-slot-time">15:00–17:00</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Podcast%20Studio%20%E2%80%93%2017:30%E2%80%9320:30,%20Torsdag%2013.08.2026"><span class="tg-slot-time">17:30–20:30</span><span class="tg-slot-price">3 000,-</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Torsdag – Lounge -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Lounge</h3>
+              <span class="tg-room-sub">Åpent areal · 20 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Lounge%20%E2%80%93%20Per%20time,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">2 500,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+          <!-- Torsdag – Drop-in Møterom -->
+          <div class="tg-room">
+            <div class="tg-room-header">
+              <h3 class="tg-room-title">Drop-in Møterom</h3>
+              <span class="tg-room-sub">Drop-in · 4 pers</span>
+            </div>
+            <div class="tg-slots">
+              <a class="tg-slot tg-is-ledig" href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20Drop-in%20M%C3%B8terom%20%E2%80%93%20Per%20time,%20Torsdag%2013.08.2026"><span class="tg-slot-label">Drop-in</span><span class="tg-slot-time">Per time</span><span class="tg-slot-price">1 000,- / t</span><span class="tg-slot-status">● Ledig</span></a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tg-cta">
+      <h3>Fant du en bolk som passer?</h3>
+      <p>Ta kontakt for tilbud, tilgjengelighet og en uforpliktende prat.</p>
+      <div class="tg-cta-buttons">
+        <a href="mailto:ijensen@q3p.no?cc=fkullerud@q3p.no&subject=Foresp%C3%B8rsel%20om%20lokaler%20%E2%80%93%20Arendalsuka%202026" class="tg-cta-btn tg-is-primary">Send forespørsel</a>
+        <a href="tel:+4797179073" class="tg-cta-btn tg-is-secondary">+47 971 79 073</a>
+      </div>
+    </div>
+
+  </div>
+</div>
